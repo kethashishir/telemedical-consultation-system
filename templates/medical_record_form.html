@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Edit Medical Record</h1>
+    <p>Update diagnosis, treatment, prescription, doctor notes, and follow-up date.</p>
+</section>
+
+<section class="card form-card">
+    <h2>Medical Record #{{ record.record_id }}</h2>
+    <p class="form-note full">
+        Appointment #{{ record.appointment_id }} - {{ record.patient_name }} with {{ record.doctor_name }} on {{ record.appointment_date }}
+    </p>
+    <form method="post" class="form-grid">
+        <label class="full">Diagnosis
+            <input type="text" name="diagnosis" value="{{ record.diagnosis }}" required>
+        </label>
+        <label class="full">Treatment
+            <textarea name="treatment" rows="3">{{ record.treatment or '' }}</textarea>
+        </label>
+        <label class="full">Prescription
+            <textarea name="prescription" rows="3">{{ record.prescription or '' }}</textarea>
+        </label>
+        <label class="full">Doctor Notes
+            <textarea name="doctor_notes" rows="3">{{ record.doctor_notes or '' }}</textarea>
+        </label>
+        <label>Follow-up Date
+            <input type="date" name="follow_up_date" value="{{ record.follow_up_date or '' }}">
+        </label>
+        <div class="form-actions full">
+            <button type="submit" class="button">Update Medical Record</button>
+            <a href="{{ url_for('medical_records') }}" class="secondary-button">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

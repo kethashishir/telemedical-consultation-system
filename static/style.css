@@ -374,3 +374,62 @@ button:disabled {
     opacity: 0.55;
     cursor: not-allowed;
 }
+
+.action-group,
+.form-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.form-actions {
+    margin-top: 4px;
+}
+
+.delete-form {
+    margin: 0;
+}
+
+.danger-button,
+.secondary-button {
+    border: 0;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    text-align: center;
+    padding: 8px 10px;
+    font: inherit;
+}
+
+.danger-button {
+    background: var(--danger);
+    color: #fff;
+}
+
+.danger-button:hover {
+    background: #7f1d1d;
+}
+
+.secondary-button {
+    background: #e2e8f0;
+    color: #24364b;
+}
+
+.secondary-button:hover {
+    background: #cbd5e1;
+}
+
+.lock-note {
+    display: inline-block;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+    min-width: 120px;
+}
+
+.form-card {
+    max-width: 900px;
+}

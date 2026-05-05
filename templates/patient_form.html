@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Edit Patient</h1>
+    <p>Update patient demographic and medical history information.</p>
+</section>
+
+<section class="card form-card">
+    <h2>Patient #{{ patient.patient_id }}</h2>
+    <form method="post" class="form-grid">
+        <label>First Name
+            <input type="text" name="first_name" value="{{ patient.first_name }}" required>
+        </label>
+        <label>Last Name
+            <input type="text" name="last_name" value="{{ patient.last_name }}" required>
+        </label>
+        <label>Date of Birth
+            <input type="date" name="date_of_birth" value="{{ patient.date_of_birth or '' }}">
+        </label>
+        <label>Gender
+            <select name="gender" required>
+                {% for gender in ['Male', 'Female', 'Other'] %}
+                <option value="{{ gender }}" {% if patient.gender == gender %}selected{% endif %}>{{ gender }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Phone
+            <input type="text" name="phone" value="{{ patient.phone or '' }}">
+        </label>
+        <label>Email
+            <input type="email" name="email" value="{{ patient.email or '' }}">
+        </label>
+        <label class="full">Address
+            <input type="text" name="address" value="{{ patient.address or '' }}">
+        </label>
+        <label class="full">Medical History
+            <textarea name="medical_history" rows="4">{{ patient.medical_history or '' }}</textarea>
+        </label>
+        <div class="form-actions full">
+            <button type="submit" class="button">Update Patient</button>
+            <a href="{{ url_for('patients') }}" class="secondary-button">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

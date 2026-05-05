@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Edit Appointment</h1>
+    <p>Update appointment patient, doctor, date, time, consultation type, reason, and status.</p>
+</section>
+
+<section class="card form-card">
+    <h2>Appointment #{{ appointment.appointment_id }}</h2>
+    <form method="post" class="form-grid" id="appointmentForm">
+        <label>Patient
+            <select name="patient_id" required>
+                {% for patient in patients %}
+                <option value="{{ patient.patient_id }}" {% if appointment.patient_id == patient.patient_id %}selected{% endif %}>{{ patient.patient_name }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Doctor
+            <select name="doctor_id" id="doctorSelect" required>
+                {% for doctor in doctors %}
+                <option value="{{ doctor.doctor_id }}" data-available-days="{{ doctor.available_days or '' }}" {% if appointment.doctor_id == doctor.doctor_id %}selected{% endif %}>
+                    {{ doctor.full_name }} - {{ doctor.specialization }}{% if doctor.available_days %} ({{ doctor.available_days }}){% endif %}
+                </option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Date
+            <input type="date" name="appointment_date" id="appointmentDate" value="{{ appointment.appointment_date }}" min="{{ min_date }}" required>
+        </label>
+        <label>Time
+            <input type="time" name="appointment_time" value="{{ appointment.appointment_time_value }}" required>
+        </label>
+        <label>Consultation Type
+            <select name="consultation_type" required>
+                {% for consultation_type in ['Video Call', 'Phone Call', 'Chat'] %}
+                <option value="{{ consultation_type }}" {% if appointment.consultation_type == consultation_type %}selected{% endif %}>{{ consultation_type }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label>Status
+            <select name="status" required>
+                {% for status in ['Pending', 'Confirmed', 'Completed', 'Cancelled'] %}
+                <option value="{{ status }}" {% if appointment.status == status %}selected{% endif %}>{{ status }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <p id="availabilityHelp" class="form-note full">The selected date must match the doctor's available days.</p>
+        <label class="full">Reason
+            <textarea name="reason" rows="4">{{ appointment.reason or '' }}</textarea>
+        </label>
+        <div class="form-actions full">
+            <button type="submit" class="button" id="bookAppointmentButton">Update Appointment</button>
+            <a href="{{ url_for('appointments') }}" class="secondary-button">Cancel</a>
+        </div>
+    </form>
+</section>
+
+<script>
+    const doctorSelect = document.getElementById("doctorSelect");
+    const appointmentDate = document.getElementById("appointmentDate");
+    const availabilityHelp = document.getElementById("availabilityHelp");
+    const bookButton = document.getElementById("bookAppointmentButton");
+    const appointmentForm = document.getElementById("appointmentForm");
+
+    function getSelectedDoctorDays() {
+        const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
+        if (!selectedOption) {
+            return [];
+        }
+        const rawDays = selectedOption.dataset.availableDays || "";
+        return rawDays.split(",").map(day => day.trim()).filter(Boolean);
+    }
+
+    function getWeekdayName(dateValue) {
+        const parts = dateValue.split("-").map(Number);
+        const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        return localDate.toLocaleDateString("en-US", { weekday: "long" });
+    }
+
+    function validateDoctorAvailability() {
+        const availableDays = getSelectedDoctorDays();
+        const selectedDate = appointmentDate.value;
+
+        availabilityHelp.classList.remove("success", "warning");
+        bookButton.disabled = false;
+
+        if (!doctorSelect.value) {
+            availabilityHelp.textContent = "Select a doctor to see available days.";
+            return true;
+        }
+
+        if (availableDays.length === 0) {
+            availabilityHelp.textContent = "This doctor has no available days configured. Please choose another doctor.";
+            availabilityHelp.classList.add("warning");
+            bookButton.disabled = true;
+            return false;
+        }
+
+        if (!selectedDate) {
+            availabilityHelp.textContent = `Available days: ${availableDays.join(", ")}.`;
+            return true;
+        }
+
+        const selectedWeekday = getWeekdayName(selectedDate);
+        if (!availableDays.includes(selectedWeekday)) {
+            availabilityHelp.textContent = `Not available on ${selectedWeekday}. Available days: ${availableDays.join(", ")}.`;
+            availabilityHelp.classList.add("warning");
+            bookButton.disabled = true;
+            return false;
+        }
+
+        availabilityHelp.textContent = `Available on ${selectedWeekday}. You can save this appointment.`;
+        availabilityHelp.classList.add("success");
+        return true;
+    }
+
+    doctorSelect.addEventListener("change", validateDoctorAvailability);
+    appointmentDate.addEventListener("change", validateDoctorAvailability);
+    appointmentForm.addEventListener("submit", function (event) {
+        if (!validateDoctorAvailability()) {
+            event.preventDefault();
+        }
+    });
+    validateDoctorAvailability();
+</script>
+{% endblock %}

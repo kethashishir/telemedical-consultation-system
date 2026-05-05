@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Edit Doctor</h1>
+    <p>Update doctor information, consultation fee, and available days.</p>
+</section>
+
+<section class="card form-card">
+    <h2>Doctor #{{ doctor.doctor_id }}</h2>
+    <form method="post" class="form-grid">
+        <label class="full">Full Name
+            <input type="text" name="full_name" value="{{ doctor.full_name }}" required>
+        </label>
+        <label>Specialization
+            <input type="text" name="specialization" value="{{ doctor.specialization }}" required>
+        </label>
+        <label>Consultation Fee
+            <input type="number" name="consultation_fee" step="0.01" min="0" value="{{ doctor.consultation_fee }}">
+        </label>
+        <label>Phone
+            <input type="text" name="phone" value="{{ doctor.phone or '' }}">
+        </label>
+        <label>Email
+            <input type="email" name="email" value="{{ doctor.email or '' }}">
+        </label>
+        <div class="full">
+            <strong>Available Days</strong>
+            <div class="checkbox-grid">
+                {% for day in day_names %}
+                <label class="check-option">
+                    <input type="checkbox" name="available_days" value="{{ day }}" {% if day in selected_days %}checked{% endif %}>
+                    {{ day }}
+                </label>
+                {% endfor %}
+            </div>
+            <p class="form-note">The system will not let you remove a day if this doctor has a future non-cancelled appointment on that day.</p>
+        </div>
+        <div class="form-actions full">
+            <button type="submit" class="button">Update Doctor</button>
+            <a href="{{ url_for('doctors') }}" class="secondary-button">Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}
