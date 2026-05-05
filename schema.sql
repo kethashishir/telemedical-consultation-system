@@ -22,7 +22,7 @@ CREATE TABLE doctors (
     specialization VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     email VARCHAR(100),
-    available_days VARCHAR(100),
+    available_days VARCHAR(100) NOT NULL,
     consultation_fee DECIMAL(10,2) DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -37,6 +37,7 @@ CREATE TABLE appointments (
     reason TEXT,
     status ENUM('Pending', 'Confirmed', 'Completed', 'Cancelled') DEFAULT 'Pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_doctor_slot (doctor_id, appointment_date, appointment_time),
     CONSTRAINT fk_appointments_patient
         FOREIGN KEY (patient_id) REFERENCES patients(patient_id)
         ON DELETE CASCADE ON UPDATE CASCADE,
@@ -70,9 +71,9 @@ INSERT INTO doctors (full_name, specialization, phone, email, available_days, co
 ('Dr. Emily Carter', 'Dermatology', '555-2003', 'emily.carter@example.com', 'Monday, Thursday', 70.00);
 
 INSERT INTO appointments (patient_id, doctor_id, appointment_date, appointment_time, consultation_type, reason, status) VALUES
-(1, 1, '2026-05-06', '10:00:00', 'Video Call', 'Fever and cough consultation', 'Confirmed'),
+(1, 1, '2026-05-06', '10:00:00', 'Video Call', 'Fever and cough consultation', 'Completed'),
 (2, 2, '2026-05-07', '14:30:00', 'Phone Call', 'Blood pressure follow-up', 'Pending'),
-(3, 3, '2026-05-08', '11:15:00', 'Chat', 'Skin rash question', 'Pending');
+(3, 3, '2026-05-07', '11:15:00', 'Chat', 'Skin rash question', 'Pending');
 
 INSERT INTO medical_records (appointment_id, diagnosis, treatment, prescription, doctor_notes, follow_up_date) VALUES
 (1, 'Common cold symptoms', 'Rest, hydration, monitor temperature', 'Acetaminophen as needed', 'Patient advised to contact doctor if symptoms worsen.', '2026-05-13');

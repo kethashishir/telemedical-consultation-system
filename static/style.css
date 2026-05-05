@@ -336,3 +336,41 @@ pre {
         font-size: 26px;
     }
 }
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.check-option {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+}
+
+.check-option input {
+    width: auto;
+}
+
+.form-note {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.form-note.warning {
+    color: var(--danger);
+}
+
+.form-note.success {
+    color: var(--success);
+}
+
+button:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+}

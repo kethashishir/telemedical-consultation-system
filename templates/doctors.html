@@ -24,9 +24,18 @@
             <label>Email
                 <input type="email" name="email">
             </label>
-            <label class="full">Available Days
-                <input type="text" name="available_days" placeholder="Monday, Wednesday, Friday">
-            </label>
+            <div class="full">
+                <strong>Available Days</strong>
+                <div class="checkbox-grid">
+                    {% for day in day_names %}
+                    <label class="check-option">
+                        <input type="checkbox" name="available_days" value="{{ day }}">
+                        {{ day }}
+                    </label>
+                    {% endfor %}
+                </div>
+                <p class="form-note">Select at least one day. Appointment dates must match these available days.</p>
+            </div>
             <button type="submit" class="button full">Save Doctor</button>
         </form>
     </div>
@@ -38,6 +47,7 @@
             <li>Primary key: doctor_id</li>
             <li>Used by: Appointments</li>
             <li>Relationship: One doctor can have many appointments</li>
+            <li>Availability controls which appointment dates can be booked</li>
         </ul>
     </div>
 </section>

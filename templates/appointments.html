@@ -8,7 +8,7 @@
 <section class="grid-two">
     <div class="card">
         <h2>Book Appointment</h2>
-        <form method="post" class="form-grid">
+        <form method="post" class="form-grid" id="appointmentForm">
             <label>Patient
                 <select name="patient_id" required>
                     <option value="">Select patient</option>
@@ -18,15 +18,17 @@
                 </select>
             </label>
             <label>Doctor
-                <select name="doctor_id" required>
+                <select name="doctor_id" id="doctorSelect" required>
                     <option value="">Select doctor</option>
                     {% for doctor in doctors %}
-                    <option value="{{ doctor.doctor_id }}">{{ doctor.full_name }} - {{ doctor.specialization }}</option>
+                    <option value="{{ doctor.doctor_id }}" data-available-days="{{ doctor.available_days or '' }}">
+                        {{ doctor.full_name }} - {{ doctor.specialization }}{% if doctor.available_days %} ({{ doctor.available_days }}){% endif %}
+                    </option>
                     {% endfor %}
                 </select>
             </label>
             <label>Date
-                <input type="date" name="appointment_date" required>
+                <input type="date" name="appointment_date" id="appointmentDate" min="{{ min_date }}" required>
             </label>
             <label>Time
                 <input type="time" name="appointment_time" required>
@@ -38,10 +40,11 @@
                     <option>Chat</option>
                 </select>
             </label>
+            <p id="availabilityHelp" class="form-note full">Select a doctor to see available days.</p>
             <label class="full">Reason
                 <textarea name="reason" rows="4" placeholder="Describe symptoms or reason for consultation"></textarea>
             </label>
-            <button type="submit" class="button full">Book Appointment</button>
+            <button type="submit" class="button full" id="bookAppointmentButton">Book Appointment</button>
         </form>
     </div>
 
@@ -51,7 +54,8 @@
         <ul>
             <li>Foreign key: patient_id references Patients</li>
             <li>Foreign key: doctor_id references Doctors</li>
-            <li>Status can be Pending, Confirmed, Completed, or Cancelled</li>
+            <li>The selected date must match the doctor's available days</li>
+            <li>A doctor cannot have two active appointments at the same date and time</li>
         </ul>
     </div>
 </section>
@@ -102,4 +106,72 @@
         </table>
     </div>
 </section>
+
+<script>
+    const doctorSelect = document.getElementById("doctorSelect");
+    const appointmentDate = document.getElementById("appointmentDate");
+    const availabilityHelp = document.getElementById("availabilityHelp");
+    const bookButton = document.getElementById("bookAppointmentButton");
+    const appointmentForm = document.getElementById("appointmentForm");
+
+    function getSelectedDoctorDays() {
+        const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
+        if (!selectedOption) {
+            return [];
+        }
+        const rawDays = selectedOption.dataset.availableDays || "";
+        return rawDays.split(",").map(day => day.trim()).filter(Boolean);
+    }
+
+    function getWeekdayName(dateValue) {
+        const parts = dateValue.split("-").map(Number);
+        const localDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        return localDate.toLocaleDateString("en-US", { weekday: "long" });
+    }
+
+    function validateDoctorAvailability() {
+        const availableDays = getSelectedDoctorDays();
+        const selectedDate = appointmentDate.value;
+
+        availabilityHelp.classList.remove("success", "warning");
+        bookButton.disabled = false;
+
+        if (!doctorSelect.value) {
+            availabilityHelp.textContent = "Select a doctor to see available days.";
+            return true;
+        }
+
+        if (availableDays.length === 0) {
+            availabilityHelp.textContent = "This doctor has no available days configured. Please choose another doctor.";
+            availabilityHelp.classList.add("warning");
+            bookButton.disabled = true;
+            return false;
+        }
+
+        if (!selectedDate) {
+            availabilityHelp.textContent = `Available days: ${availableDays.join(", ")}.`;
+            return true;
+        }
+
+        const selectedWeekday = getWeekdayName(selectedDate);
+        if (!availableDays.includes(selectedWeekday)) {
+            availabilityHelp.textContent = `Not available on ${selectedWeekday}. Available days: ${availableDays.join(", ")}.`;
+            availabilityHelp.classList.add("warning");
+            bookButton.disabled = true;
+            return false;
+        }
+
+        availabilityHelp.textContent = `Available on ${selectedWeekday}. You can book this appointment.`;
+        availabilityHelp.classList.add("success");
+        return true;
+    }
+
+    doctorSelect.addEventListener("change", validateDoctorAvailability);
+    appointmentDate.addEventListener("change", validateDoctorAvailability);
+    appointmentForm.addEventListener("submit", function (event) {
+        if (!validateDoctorAvailability()) {
+            event.preventDefault();
+        }
+    });
+</script>
 {% endblock %}
