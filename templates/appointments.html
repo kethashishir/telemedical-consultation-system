@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Appointments</h1>
+    <p>Book telemedical consultation appointments and update appointment status.</p>
+</section>
+
+<section class="grid-two">
+    <div class="card">
+        <h2>Book Appointment</h2>
+        <form method="post" class="form-grid">
+            <label>Patient
+                <select name="patient_id" required>
+                    <option value="">Select patient</option>
+                    {% for patient in patients %}
+                    <option value="{{ patient.patient_id }}">{{ patient.patient_name }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Doctor
+                <select name="doctor_id" required>
+                    <option value="">Select doctor</option>
+                    {% for doctor in doctors %}
+                    <option value="{{ doctor.doctor_id }}">{{ doctor.full_name }} - {{ doctor.specialization }}</option>
+                    {% endfor %}
+                </select>
+            </label>
+            <label>Date
+                <input type="date" name="appointment_date" required>
+            </label>
+            <label>Time
+                <input type="time" name="appointment_time" required>
+            </label>
+            <label>Consultation Type
+                <select name="consultation_type" required>
+                    <option>Video Call</option>
+                    <option>Phone Call</option>
+                    <option>Chat</option>
+                </select>
+            </label>
+            <label class="full">Reason
+                <textarea name="reason" rows="4" placeholder="Describe symptoms or reason for consultation"></textarea>
+            </label>
+            <button type="submit" class="button full">Book Appointment</button>
+        </form>
+    </div>
+
+    <div class="card info-card">
+        <h2>Purpose</h2>
+        <p>This form connects Patients and Doctors through the Appointments table.</p>
+        <ul>
+            <li>Foreign key: patient_id references Patients</li>
+            <li>Foreign key: doctor_id references Doctors</li>
+            <li>Status can be Pending, Confirmed, Completed, or Cancelled</li>
+        </ul>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Appointment List</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Type</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.appointment_id }}</td>
+                    <td>{{ appointment.patient_name }}</td>
+                    <td>{{ appointment.doctor_name }}</td>
+                    <td>{{ appointment.appointment_date }}</td>
+                    <td>{{ appointment.appointment_time }}</td>
+                    <td>{{ appointment.consultation_type }}</td>
+                    <td>{{ appointment.reason or '' }}</td>
+                    <td><span class="status {{ appointment.status|lower }}">{{ appointment.status }}</span></td>
+                    <td>
+                        <form method="post" action="{{ url_for('update_appointment_status', appointment_id=appointment.appointment_id) }}" class="inline-form">
+                            <select name="status">
+                                {% for status in ['Pending', 'Confirmed', 'Completed', 'Cancelled'] %}
+                                <option value="{{ status }}" {% if appointment.status == status %}selected{% endif %}>{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="small-button">Save</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="9">No appointments found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

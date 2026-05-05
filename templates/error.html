@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero small">
+    <h1>{{ message }}</h1>
+    <p>Check that MySQL is running and that your database credentials in the .env file are correct.</p>
+</section>
+<div class="card">
+    <h2>Error detail</h2>
+    <pre>{{ detail }}</pre>
+</div>
+{% endblock %}

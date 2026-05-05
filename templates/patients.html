@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Patients</h1>
+    <p>Add patient information and view registered patients.</p>
+</section>
+
+<section class="grid-two">
+    <div class="card">
+        <h2>Add Patient</h2>
+        <form method="post" class="form-grid">
+            <label>First Name
+                <input type="text" name="first_name" required>
+            </label>
+            <label>Last Name
+                <input type="text" name="last_name" required>
+            </label>
+            <label>Date of Birth
+                <input type="date" name="date_of_birth">
+            </label>
+            <label>Gender
+                <select name="gender" required>
+                    <option value="">Select</option>
+                    <option>Male</option>
+                    <option>Female</option>
+                    <option>Other</option>
+                </select>
+            </label>
+            <label>Phone
+                <input type="text" name="phone">
+            </label>
+            <label>Email
+                <input type="email" name="email">
+            </label>
+            <label class="full">Address
+                <input type="text" name="address">
+            </label>
+            <label class="full">Medical History
+                <textarea name="medical_history" rows="4"></textarea>
+            </label>
+            <button type="submit" class="button full">Save Patient</button>
+        </form>
+    </div>
+
+    <div class="card info-card">
+        <h2>Purpose</h2>
+        <p>This form stores patient demographic and health history details. It is connected to the Patients table in MySQL.</p>
+        <ul>
+            <li>Primary key: patient_id</li>
+            <li>Used by: Appointments</li>
+            <li>Relationship: One patient can have many appointments</li>
+        </ul>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Patient List</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>DOB</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Medical History</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for patient in patients %}
+                <tr>
+                    <td>{{ patient.patient_id }}</td>
+                    <td>{{ patient.first_name }} {{ patient.last_name }}</td>
+                    <td>{{ patient.date_of_birth or '' }}</td>
+                    <td>{{ patient.gender }}</td>
+                    <td>{{ patient.phone or '' }}</td>
+                    <td>{{ patient.email or '' }}</td>
+                    <td>{{ patient.medical_history or '' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7">No patients found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}

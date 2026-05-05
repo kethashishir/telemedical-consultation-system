@@ -1,0 +1,17 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Environment variables / passwords
+.env
+
+# macOS
+.DS_Store
+
+# Flask
+instance/
+
+# IDE files
+.vscode/
+.idea/

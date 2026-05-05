@@ -1,0 +1,14 @@
+digraph ERD {
+    graph [rankdir=LR, bgcolor="white", margin=0.2];
+    node [shape=record, style="rounded,filled", fillcolor="#eef6f8", color="#155e75", fontname="Arial"];
+    edge [color="#334155", fontname="Arial"];
+
+    patients [label="{PATIENTS|PK patient_id\lfirst_name\llast_name\ldate_of_birth\lgender\lphone\lemail\laddress\lmedical_history\lcreated_at\l}"];
+    doctors [label="{DOCTORS|PK doctor_id\lfull_name\lspecialization\lphone\lemail\lavailable_days\lconsultation_fee\lcreated_at\l}"];
+    appointments [label="{APPOINTMENTS|PK appointment_id\lFK patient_id\lFK doctor_id\lappointment_date\lappointment_time\lconsultation_type\lreason\lstatus\lcreated_at\l}"];
+    medical_records [label="{MEDICAL_RECORDS|PK record_id\lFK appointment_id UNIQUE\ldiagnosis\ltreatment\lprescription\ldoctor_notes\lfollow_up_date\lcreated_at\l}"];
+
+    patients -> appointments [label="1 to many"];
+    doctors -> appointments [label="1 to many"];
+    appointments -> medical_records [label="1 to 0..1"];
+}

@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="page-title">
+    <h1>Doctors</h1>
+    <p>Add doctors and view provider availability.</p>
+</section>
+
+<section class="grid-two">
+    <div class="card">
+        <h2>Add Doctor</h2>
+        <form method="post" class="form-grid">
+            <label class="full">Full Name
+                <input type="text" name="full_name" placeholder="Dr. First Last" required>
+            </label>
+            <label>Specialization
+                <input type="text" name="specialization" placeholder="General Medicine" required>
+            </label>
+            <label>Consultation Fee
+                <input type="number" name="consultation_fee" step="0.01" min="0" value="50.00">
+            </label>
+            <label>Phone
+                <input type="text" name="phone">
+            </label>
+            <label>Email
+                <input type="email" name="email">
+            </label>
+            <label class="full">Available Days
+                <input type="text" name="available_days" placeholder="Monday, Wednesday, Friday">
+            </label>
+            <button type="submit" class="button full">Save Doctor</button>
+        </form>
+    </div>
+
+    <div class="card info-card">
+        <h2>Purpose</h2>
+        <p>This form stores doctor information, specialization, fee, and available days.</p>
+        <ul>
+            <li>Primary key: doctor_id</li>
+            <li>Used by: Appointments</li>
+            <li>Relationship: One doctor can have many appointments</li>
+        </ul>
+    </div>
+</section>
+
+<section class="card">
+    <h2>Doctor List</h2>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Specialization</th>
+                    <th>Phone</th>
+                    <th>Email</th>
+                    <th>Available Days</th>
+                    <th>Fee</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for doctor in doctors %}
+                <tr>
+                    <td>{{ doctor.doctor_id }}</td>
+                    <td>{{ doctor.full_name }}</td>
+                    <td>{{ doctor.specialization }}</td>
+                    <td>{{ doctor.phone or '' }}</td>
+                    <td>{{ doctor.email or '' }}</td>
+                    <td>{{ doctor.available_days or '' }}</td>
+                    <td>${{ doctor.consultation_fee }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7">No doctors found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+{% endblock %}
